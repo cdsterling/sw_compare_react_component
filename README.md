@@ -1,68 +1,38 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+to run locally: npm run start
 
-## Available Scripts
+![image](https://user-images.githubusercontent.com/4316178/73598789-848f1c80-44f1-11ea-9a68-45862a98b3c0.png)
+#Star Wars Starship Crewsize Comparison
+to run locally: npx node-static
 
-In the project directory, you can run:
+This is HW 3 for my Kickstart Frontend Course
 
-### `npm start`
+I have chosen to visualize data from the star wars api https://swapi.co/
+For this initial data visualization i will be comparing the crew sizes of different starships.
 
-Runs the app in the development mode.<br />
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+in order to get this data the api is called like this:
+	https://swapi.co/api/starships/<StarshipID#>/
 
-The page will reload if you make edits.<br />
-You will also see any lint errors in the console.
+where <StarShipID#> is the id number for a starship. So for example https://swapi.co/api/starships/9/ returns results (in json format) about the Death Star (technically it is a starship, although at somepoint there was confusion about it being a moon, i believe) which has a crew size of (according to the api) 342,953.
 
-### `npm test`
+This comparison is visualized using a bar graph.
 
-Launches the test runner in the interactive watch mode.<br />
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+-----
+The api also includes other data for various features/dimentions of the various Star Wars Starships. I have added the ability to compare on these different dimensions:
+* Crew Size,
+* Cost (Galactic Credits)
+* Ship Length
+* Max Speed
+* Max Passengers
+* Cargo Capacity
+* HyperDrive Rating
 
-### `npm run build`
 
-Builds the app for production to the `build` folder.<br />
-It correctly bundles React in production mode and optimizes the build for the best performance.
+for the starfield background i googled and found this awesome one put together by Keith Clark: https://codepen.io/keithclark/pen/zqcEd . It seemed very pertinent to the star wars theme.
 
-The build is minified and the filenames include the hashes.<br />
-Your app is ready to be deployed!
+note that i had to increase the z index of the bars in the bar chart, the dropdown and all of the checkboxes in order for them to be clicked on.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
 
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (Webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/code-splitting
-
-### Analyzing the Bundle Size
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size
-
-### Making a Progressive Web App
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app
-
-### Advanced Configuration
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/advanced-configuration
-
-### Deployment
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/deployment
-
-### `npm run build` fails to minify
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
+Files:
+ * README.md - This file containing relavant info about the project
+ * src/App.js - this is where all of the react/javascript/jsx magic happens
+ * src/App.css -all of the css used by the elements created in App.js
