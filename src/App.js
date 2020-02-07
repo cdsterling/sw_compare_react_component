@@ -1,6 +1,10 @@
 import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
+import CheckBoxHolder from './components/CheckboxHolder/CheckboxHolder.js';
+import Dropdown from './components/Dropdown/Dropdown.js';
+import Graph from './components/Graph/Graph.js';
+
 
 class App extends Component {
     state = {
@@ -50,6 +54,7 @@ class App extends Component {
         V_wing: { name: "V-wing", index: 75},
         T_70_X_wing_fighter: { name: "T-70 X-wing fighter", index: 77},
     }
+    
     SW_ShipFeatures =[
         {param: "crew", text: "Crew Size"},
         {param: "cost_in_credits", text: "Cost (Galactic Credits)"},
@@ -170,13 +175,18 @@ class App extends Component {
             </div>
             <div className="BarChart-featureComparison">
                 <label>Choose Feature
-                    <select className="BarChart-select" onChange={(ev) => this.selectFeature(ev)} value={this.state.selectedFeature}>
+                    <Dropdown
+                        ChangeSelection = {(ev) => this.selectFeature(ev)}
+                        SelectedOption = {this.state.selectedFeature}
+                        OptionList = {this.SW_ShipFeatures}
+                    />
+                    {/* <select className="BarChart-select" onChange={(ev) => this.selectFeature(ev)} value={this.state.selectedFeature}>
                     {
                         this.SW_ShipFeatures.map( ShipFeature => (
                             <option value={ShipFeature.param} key={ShipFeature.param}> { ShipFeature.text} </option>
                         ))
                     }
-                    </select>
+                    </select> */}
                 </label>
             </div>
             <div className="BarChart-shipSelection">
