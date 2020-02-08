@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
-import CheckBoxHolder from './components/CheckboxHolder/CheckboxHolder.js';
+import CheckBoxHolder from './components/CheckBoxHolder/CheckBoxHolder.js';
 import Dropdown from './components/Dropdown/Dropdown.js';
-import Graph from './components/Graph/Graph.js';
+import BarChart from './components/BarChart/BarChart.js';
 
 
 class App extends Component {
@@ -67,46 +67,56 @@ class App extends Component {
 
     componentDidMount() {
         console.log('entering ComponentDidMount Function');
-        this.fetchShipInfoAPI()
+        this.fetchShipInfoAPI(this.state.apiShipIndices.length)
 
     }
 
 
-    fetchShipInfoAPI = () => {
-        console.log("Entering fetchShipInfoAPI function");
-        //before fetching anything, we have to make sure to update the indicies and the selected feature based on user input
+    fetchShipInfoAPI = (num_ships) => {
+        console.log("Entering fetchShipInfoAPI function for the following # and indices:", num_ships, this.state.apiShipIndices);
+        if (num_ships != this.state.apiShipIndices.length){
+            setTimeout( () => {
+                this.fetchShipInfoAPI(num_ships);
+            }, 300)
+            
+        }
+        else{ // now we can proceed with fetching stuff
+
         
-        let numberOfRequests = this.state.apiShipIndices.length;
-        let currentMaxFeatureSize= 0;
-        this.setState({
-            displayShips: [],
-            maxFeatureSize: currentMaxFeatureSize
-        })
-        for (let shipID of this.state.apiShipIndices){
-            console.log("loading Index:",shipID);
-            console.log("Total Number of Requests: ", numberOfRequests);
-            fetch(`https://swapi.co/api/starships/${shipID}/`)
-                .then(response => response.json())
-                .then(data => {
-                    console.log("storing data for ship: ", data.name);
-                    console.log(data);
-                    this.setState({
-                        displayShips: this.state.displayShips.concat([data])
-                    });       
-                    console.log('data[selectedFeature], for feature', this.state.selectedFeature, ": ", data[this.state.selectedFeature] );
-                    if (Number(data[this.state.selectedFeature]) > currentMaxFeatureSize){
-                        console.log("updating max feature length from: "+ currentMaxFeatureSize +" to: "+ data[this.state.selectedFeature] );
-                        currentMaxFeatureSize = Number(data[this.state.selectedFeature]);
+            //before fetching anything, we have to make sure to update the indicies and the selected feature based on user input
+            
+            let numberOfRequests = this.state.apiShipIndices.length;
+            let currentMaxFeatureSize= 0;
+            this.setState({
+                displayShips: [],
+                maxFeatureSize: currentMaxFeatureSize
+            })
+            for (let shipID of this.state.apiShipIndices){
+                console.log("loading Index:",shipID);
+                console.log("Total Number of Requests: ", numberOfRequests);
+                fetch(`https://swapi.co/api/starships/${shipID}/`)
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log("storing data for ship: ", data.name);
+                        console.log(data);
                         this.setState({
-                            maxFeatureSize: currentMaxFeatureSize
-                        });
-                    }
-                    numberOfRequests--;
-                });
-        }   
+                            displayShips: this.state.displayShips.concat([data])
+                        });       
+                        console.log('data[selectedFeature], for feature', this.state.selectedFeature, ": ", data[this.state.selectedFeature] );
+                        if (Number(data[this.state.selectedFeature]) > currentMaxFeatureSize){
+                            console.log("updating max feature length from: "+ currentMaxFeatureSize +" to: "+ data[this.state.selectedFeature] );
+                            currentMaxFeatureSize = Number(data[this.state.selectedFeature]);
+                            this.setState({
+                                maxFeatureSize: currentMaxFeatureSize
+                            });
+                        }
+                        numberOfRequests--;
+                    });
+            }   
+        }
     }
-
-    createClickHandler (myShip) {
+    
+    createClickHandler = (myShip) => {
         return( alert(myShip.name+'\nCrew Size: '+ myShip.crew +
                     '\nCost (Galactic Credits): '+ myShip.cost_in_credits +
                     '\nShip Length: '+ myShip.length +
@@ -137,18 +147,26 @@ class App extends Component {
     }
     shipClick = (ev) =>{
         console.log("Entering shipClick method with param:", ev.target.value, ev.target.checked)
+        console.log("Initial apiShipIndices: ",this.state.apiShipIndices)
         let checkBoxValue = Number(ev.target.value);
+        let num_ships = this.state.apiShipIndices.length;
         let newShipIndices = [...this.state.apiShipIndices];
 
         if (ev.target.checked){ // add the value to apiShipIndices 
+            console.log("adding to indices: ", newShipIndices.concat([checkBoxValue]));
+            num_ships++;
+            let newVal = newShipIndices.concat([checkBoxValue]);
             this.setState({
-                apiShipIndices: newShipIndices.concat([checkBoxValue])
+                apiShipIndices: newVal,
             });
             
         }
         else{ //remove value from apiShipIndices
             let index = newShipIndices.indexOf(checkBoxValue);
+            console.log("removing from indices1");
             if (index > -1) { //Make sure item is present in the array, without if condition, -n indexes will be considered from the end of the array.
+                num_ships--;
+                console.log("removing from indices2");
                 newShipIndices.splice(index, 1);
               }
             this.setState({
@@ -156,7 +174,8 @@ class App extends Component {
             });
 
         }
-        this.fetchShipInfoAPI();
+        console.log("Ship Click has updated apiShipIndices to: ", this.state.apiShipIndices)
+        this.fetchShipInfoAPI(num_ships);
     }
   
     render(){
@@ -173,49 +192,27 @@ class App extends Component {
             <div className="BarChart-header">
                 <h1>Star Wars Ship Compare</h1>
             </div>
-            <div className="BarChart-featureComparison">
-                <label>Choose Feature
-                    <Dropdown
-                        ChangeSelection = {(ev) => this.selectFeature(ev)}
-                        SelectedOption = {this.state.selectedFeature}
-                        OptionList = {this.SW_ShipFeatures}
-                    />
-                    {/* <select className="BarChart-select" onChange={(ev) => this.selectFeature(ev)} value={this.state.selectedFeature}>
-                    {
-                        this.SW_ShipFeatures.map( ShipFeature => (
-                            <option value={ShipFeature.param} key={ShipFeature.param}> { ShipFeature.text} </option>
-                        ))
-                    }
-                    </select> */}
-                </label>
+            <div className="BarChart-featureComparison">  
+                <Dropdown
+                    DropDownLabel = "Choose Feature"
+                    ChangeSelection = {(ev) => this.selectFeature(ev)}
+                    SelectedOption = {this.state.selectedFeature}
+                    OptionList = {this.SW_ShipFeatures}
+                />
             </div>
-            <div className="BarChart-shipSelection">
-            {
-                Object.keys(this.SW_Ships).map(ShipKey => (
-                    <label htmlFor={ShipKey} key={ShipKey}> {this.SW_Ships[ShipKey].name}
-                    {
-                        this.state.apiShipIndices.includes(this.SW_Ships[ShipKey].index) ? 
-                            <input type="checkbox" key={this.SW_Ships[ShipKey].index} checked name={ShipKey} onChange={(ev) => this.shipClick(ev)} value={this.SW_Ships[ShipKey].index} id={ShipKey} className="BarChart-shipCheckbox"></input> :
-                            <input type="checkbox" key={this.SW_Ships[ShipKey].index} name={ShipKey} onChange={(ev) => this.shipClick(ev)} value={this.SW_Ships[ShipKey].index} id={ShipKey} className="BarChart-shipCheckbox"></input>
-                    }
-                        </label>
-                ))
-            }
-            </div>
-            <div className="BarChart-container">
-                {
-                    this.state.displayShips.map( currentShip => (
-                        <div 
-                            className="BarChart-bar" 
-                            name={currentShip.name}
-                            onClick={() => this.createClickHandler(currentShip)}
-                            style={{height: 100*(Number(currentShip[this.state.selectedFeature]) / this.state.maxFeatureSize) + '%'}} 
-                        >{currentShip.name}</div>
-                    ))
-                }
+            
+            <CheckBoxHolder
+                AllCheckBoxes = {this.SW_Ships}
+                CheckedBoxes = {this.state.apiShipIndices}
+                BoxChecked = {(ev) => this.shipClick(ev)}
 
-
-            </div>
+            />  
+            <BarChart
+                Bars={this.state.displayShips}
+                ComparisonFeature={this.state.selectedFeature}
+                BiggestValue={this.state.maxFeatureSize}
+                ClickBar={this.createClickHandler}
+            />
       </div>
 
       
